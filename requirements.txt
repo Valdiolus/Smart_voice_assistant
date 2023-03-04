@@ -1,0 +1,4 @@
+openai
+gTTS
+pyaudio
+wave

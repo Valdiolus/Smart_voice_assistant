@@ -4,7 +4,7 @@ import struct
 import wave
 import time
 
-Threshold = 30
+Threshold = 25
 
 SHORT_NORMALIZE = (1.0/32768.0)
 chunk = 1024
@@ -13,7 +13,7 @@ CHANNELS = 1
 RATE = 44100
 swidth = 2
 
-TIMEOUT_LENGTH = 2
+TIMEOUT_LENGTH = 3
 
 f_name_directory = 'recordings'
 
@@ -61,7 +61,7 @@ class Recorder:
     def write(self, recording):
         #n_files = len(os.listdir(f_name_directory))
 
-        filename = 'user_voice.wav' # os.path.join(f_name_directory, '{}.wav'.format(n_files))
+        filename = 'user_record.mp3' # os.path.join(f_name_directory, '{}.wav'.format(n_files))
 
         wf = wave.open(filename, 'wb')
         wf.setnchannels(CHANNELS)

@@ -14,11 +14,13 @@ chat_messages = [{"role": "system", "content": "You are a helpful voice assistan
 
 recorder = Recorder()
 
+print("Say something!")
+
 while(True):
 
   file_path = recorder.listen()
 
-  #print("Recording finished ")
+  print("Recording finished ")
 
   # Convert audio to text
   audio_file= open(file_path, "rb")
