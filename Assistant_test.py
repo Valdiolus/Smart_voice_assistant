@@ -1,9 +1,8 @@
 import openai
 import os
 
-import sounddevice as sd
-from scipy.io.wavfile import write
 from gtts import gTTS
+from recorder import Recorder
 
 openai_key = open("OpenAI_key.txt", "r").read()
 
@@ -11,35 +10,18 @@ openai.api_key = openai_key
 openai.Model.list()
 
 # List of chat messages
-chat_messages = [{"role": "system", "content": "You are a helpful voice assistant, speak only in English, with sentences less than 10 words."}]
+chat_messages = [{"role": "system", "content": "You are a helpful voice assistant named Cookie, speak only in English, with sentences less than 10 words."}]
+
+recorder = Recorder()
 
 while(True):
-  seconds = input("Press Enter number of seconds to record: ")
 
-  if seconds == "q":
-    print("Exiting")
-    break
-  
-  print("Recording for", seconds, "seconds")
+  file_path = recorder.listen()
 
-  freq = 44100
-  
-  duration = int(seconds)
-  
-  # Recording audio
-  user_recording = sd.rec(int(duration * freq),
-                    samplerate=freq, channels=1)
-
-  print("Recording Audio")
-  # Record audio for the given number of seconds
-  sd.wait()
-  print("Audio recording complete")
-  
-  # Save user recording
-  write("user_record.mp3", freq, user_recording)
+  #print("Recording finished ")
 
   # Convert audio to text
-  audio_file= open("user_record.mp3", "rb")
+  audio_file= open(file_path, "rb")
   user_transcript = openai.Audio.transcribe("whisper-1", audio_file).text
   print("User:", user_transcript)
 
