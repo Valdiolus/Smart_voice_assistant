@@ -4,50 +4,87 @@ import os
 from gtts import gTTS
 from recorder import Recorder
 
-openai_key = open("OpenAI_key.txt", "r").read()
+import re
+import time
 
-openai.api_key = openai_key
-openai.Model.list()
+def audio_quickplayer(message):
+  # Split message into parts
+  part_message = re.split('[;|.|\n]', message)
 
-# List of chat messages
-chat_messages = [{"role": "system", "content": "You are a helpful voice assistant named Cookie, speak only in English, with sentences less than 10 words."}]
+  audio_names = []
 
-recorder = Recorder()
+  # Loop through parts
+  for count in range(len(part_message)):
 
-print("Say something!")
+    # Check if part is empty
+    if len(part_message[count]) == 0:
+      continue
 
-while(True):
+    #print(count, part_message[count])
 
-  file_path = recorder.listen()
+    # Convert text to speech
+    audio = gTTS(text=part_message[count], lang="en", slow=False)
 
-  print("Recording finished ")
+    # Create file name
+    current_name = "audio/assistant_record" + str(count) + ".mp3"
+    
+    # Add file name to list
+    audio_names.append(current_name)
 
-  # Convert audio to text
-  audio_file= open(file_path, "rb")
-  user_transcript = openai.Audio.transcribe("whisper-1", audio_file).text
-  print("User:", user_transcript)
+    # Save assistant response
+    audio.save(current_name)
 
-  # Add user message to chat messages
-  chat_messages.append({"role": "user", "content": user_transcript})
+    # Play assistant response
+    os.system("afplay -r 1.4 " + current_name)
 
-  # Get assistant response
-  completions = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=chat_messages
-  )
 
-  # Get assistant message
-  message = completions.choices[0].message.content
-  print("assistant", message)
+def main():
 
-  # Add assistant message to chat messages
-  chat_messages.append({"role": "assistant", "content": message})
-  
-  # Convert text to speech
-  audio = gTTS(text=message, lang="en", slow=False)
+  openai_key = open("OpenAI_key.txt", "r").read()
 
-  # Save assistant response
-  audio.save("assistant_record.mp3")
+  openai.api_key = openai_key
+  openai.Model.list()
 
-  # Play audio
-  os.system("afplay -r 1.4 assistant_record.mp3")
+  # List of chat messages
+  chat_messages = [{"role": "system", "content": "You are a helpful voice assistant named Cookie, speak only in English, with sentences less than 10 words."}]
+
+  recorder = Recorder()
+
+  if not os.path.exists('audio'):
+    os.makedirs('audio')
+
+  print("Say something!")
+
+  while(True):
+
+    file_path = recorder.listen()
+
+    print("Recording finished ")
+
+    # Convert audio to text
+    audio_file= open(file_path, "rb")
+    user_transcript = openai.Audio.transcribe("whisper-1", audio_file).text
+    print("User:", user_transcript)
+
+    # Add user message to chat messages
+    chat_messages.append({"role": "user", "content": user_transcript})
+
+    # Get assistant response
+    completions = openai.ChatCompletion.create(
+      model="gpt-3.5-turbo",
+      messages=chat_messages
+    )
+
+    # Get assistant message
+    message = completions.choices[0].message.content
+    print("assistant:", message)
+
+    # Add assistant message to chat messages
+    chat_messages.append({"role": "assistant", "content": message})
+    
+    audio_quickplayer(message)
+
+
+if __name__ == "__main__":
+  main()
+

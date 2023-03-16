@@ -61,7 +61,7 @@ class Recorder:
     def write(self, recording):
         #n_files = len(os.listdir(f_name_directory))
 
-        filename = 'user_record.mp3' # os.path.join(f_name_directory, '{}.wav'.format(n_files))
+        filename = 'audio/user_record.mp3' # os.path.join(f_name_directory, '{}.wav'.format(n_files))
 
         wf = wave.open(filename, 'wb')
         wf.setnchannels(CHANNELS)
